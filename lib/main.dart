@@ -18,8 +18,9 @@ void main() async {
   // ✅ Boîte pour les utilisateurs
   await Hive.openBox('users');
 
-  // ✅ Enregistrement de l’adaptateur SalonStartupAfro
+  // ✅ Enregistrement de l’adaptateur SalonStartupAf
   Hive.registerAdapter(SalonStartupAfroAdapter());
+
 
   // ✅ Boîtes pour albums et salons
   await Hive.openBox<SalonStartupAfro>('salonsBox');

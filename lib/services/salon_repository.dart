@@ -1,48 +1,100 @@
-import 'package:hive/hive.dart';
+import 'package:flutter/material.dart';
 import '../models/salon.dart';
+import '../repositories/salon_repository.dart';
 
-class SalonRepository {
-  Future<List<SalonStartupAfro>> loadSalonsWithCache() async {
-    final box = await Hive.openBox<SalonStartupAfro>('salonsBox');
+class SalonListScreen extends StatefulWidget {
+  const SalonListScreen({super.key});
 
-    if (box.isNotEmpty) {
-      return box.values.toList();
-    }
+  @override
+  State<SalonListScreen> createState() => _SalonListScreenState();
+}
 
-    final salons = await fetchSalons();
-    await box.clear();
-    await box.addAll(salons);
-    return salons;
+class _SalonListScreenState extends State<SalonListScreen> {
+  final SalonRepository _repository = SalonRepository();
+  late Future<List<SalonStartupAfro>> _salonsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _salonsFuture = _repository.loadSalonsWithCache();
   }
 
-  Future<List<SalonStartupAfro>> fetchSalons() async {
-    await Future.delayed(const Duration(seconds: 2));
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Salons Startup Afro")),
+      body: FutureBuilder<List<SalonStartupAfro>>(
+        future: _salonsFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-    return [
-      SalonStartupAfro(
-        id: 1,
-        nom: "AfroTech Hub",
-        description: "Incubateur de startups tech africaines",
-        date: "2025-12-15",
-        ville: "Abidjan",
-        image: "https://via.placeholder.com/150",
+          final salons = snapshot.data!;
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: salons.length,
+            itemBuilder: (context, index) {
+              final salon = salons[index];
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(salon.image, height: 150, width: double.infinity, fit: BoxFit.cover),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Text(
+                        salon.nom,
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Text(salon.description),
+                      Text("📅 ${salon.date}"),
+                      Text("📍 ${salon.ville}"),
+
+                      const SizedBox(height: 16),
+
+                      // 🔥 LES BOUTONS AJOUTÉS ICI
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // Action pour voir les détails
+                            },
+                            child: const Text("Voir détails"),
+                          ),
+
+                          OutlinedButton(
+                            onPressed: () {
+                              // Action pour s'inscrire / participer
+                            },
+                            child: const Text("Participer"),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
-      SalonStartupAfro(
-        id: 2,
-        nom: "Startup AfroBusiness",
-        description: "Salon business pour entrepreneurs afro-descendants",
-        date: "2026-01-10",
-        ville: "Dakar",
-        image: "https://via.placeholder.com/150",
-      ),
-      SalonStartupAfro(
-        id: 3,
-        nom: "BlackNetwork Connect",
-        description: "Réseau de startups africaines",
-        date: "2026-02-05",
-        ville: "Paris",
-        image: "https://via.placeholder.com/150",
-      ),
-    ];
+    );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:prodiges_dafriques/services/salon_repository.dart';
+import 'package:prodiges_dafriques/repositories/salon_repository.dart';
+
 import '../models/salon.dart';
+import 'salon_list_screen.dart'; //  🔥 IMPORTANT : importer l’écran
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: loadData, // Recharger
+            onPressed: loadData,
           ),
         ],
       ),
@@ -61,8 +63,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text(salon.nom),
                     subtitle: Text("${salon.description}\n${salon.ville} - ${salon.date}"),
                     isThreeLine: true,
+
+                    // ⭐️ Navigation ajoutée ici
                     onTap: () {
-                      // Tu peux ajouter une page détail si tu veux
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SalonListScreen(),
+                        ),
+                      );
                     },
                   ),
                 );
