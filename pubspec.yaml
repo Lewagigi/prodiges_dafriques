@@ -5,24 +5,30 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.10.1
+  sdk: ">=3.10.1 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
   cupertino_icons: ^1.0.8
 
-  # --- AJOUT DES DEPENDANCES HIVE ---
+  # --- HIVE (stockage local) ---
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.1
 
+  # --- HTTP pour API ---
+  http: ^1.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^6.0.0
+
+  # --- Génération de code Hive ---
+  build_runner: ^2.4.6
+  hive_generator: ^2.0.1
+  analyzer: ^6.4.1   # ✅ version compatible avec Flutter 3.10
 
 flutter:
   uses-material-design: true

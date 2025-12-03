@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import '../utils.dart'; // pour logout
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,9 +13,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  // Fonction pour créer un compte
   void register() async {
     final usersBox = Hive.box('users');
-
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
@@ -37,15 +38,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Créer un compte")),
+      appBar: AppBar(
+        title: const Text("Créer un compte"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => logout(context), // bouton déconnexion
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // centrer le formulaire
           children: [
             TextField(
               controller: emailController,
               decoration: const InputDecoration(labelText: "Email"),
             ),
+            const SizedBox(height: 10),
             TextField(
               controller: passwordController,
               decoration: const InputDecoration(labelText: "Mot de passe"),

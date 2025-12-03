@@ -41,7 +41,7 @@ return Scaffold(
         SizedBox(height: 10),
 
         Text(
-          'Découvre, inspire, entreprends',
+          'Afrique en mouvement',
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,
