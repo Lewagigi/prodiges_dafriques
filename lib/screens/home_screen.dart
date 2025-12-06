@@ -5,7 +5,8 @@ import 'package:prodiges_dafriques/repositories/salon_repository.dart';
 import '../models/salon.dart';
 import '../models/entreprise.dart';
 import 'create_entreprise_screen.dart';
-import 'salon_list_screen.dart';
+import 'salon_detail_screen.dart';
+import 'entreprise_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -65,14 +66,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
-                      leading: Image.network(salon.image, width: 50, height: 50),
+                      leading: salon.image.isNotEmpty
+                          ? Image.network(salon.image, width: 50, height: 50)
+                          : const Icon(Icons.event),
                       title: Text(salon.nom),
-                      subtitle: Text("${salon.description}\n${salon.ville} - ${salon.date}"),
+                      subtitle:
+                          Text("${salon.description}\n${salon.ville} - ${salon.date}"),
                       isThreeLine: true,
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const SalonListScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => SalonDetailScreen(salon: salon),
+                          ),
                         );
                       },
                     ),
@@ -90,6 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text(entreprise.nom),
                     subtitle: Text("${entreprise.ville}\n${entreprise.description}"),
                     isThreeLine: true,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              EntrepriseDetailScreen(entreprise: entreprise),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
