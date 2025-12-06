@@ -41,11 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  bool isUserLoggedIn() {
-    final usersBox = Hive.box('users');
-    return usersBox.get('currentUser') != null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,13 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          if (!isUserLoggedIn()) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Vous devez être connecté pour créer une entreprise")),
-            );
-            return;
-          }
-
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const CreateEntrepriseScreen()),
