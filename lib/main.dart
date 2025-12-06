@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'models/salon.dart';
+import 'models/entreprise.dart';
+
 import 'screens/register_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -12,19 +14,19 @@ import 'screens/album_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Initialisation Hive
   await Hive.initFlutter();
 
-  // ✅ Boîte pour les utilisateurs
-  await Hive.openBox('users');
-
-  // ✅ Enregistrement de l’adaptateur SalonStartupAf
+  // 🔹 Adapter Salons
   Hive.registerAdapter(SalonStartupAfroAdapter());
 
+  // 🔹 Adapter Entreprise
+  Hive.registerAdapter(EntrepriseAdapter());
 
-  // ✅ Boîtes pour albums et salons
+  // 🔹 Boxes Hive
+  await Hive.openBox('users');
   await Hive.openBox<SalonStartupAfro>('salonsBox');
- 
+ await Hive.openBox<Entreprise>('entreprisesBox');
+
 
   runApp(const ProdigesApp());
 }

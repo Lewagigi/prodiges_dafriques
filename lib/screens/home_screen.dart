@@ -3,7 +3,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:prodiges_dafriques/repositories/salon_repository.dart';
 
 import '../models/salon.dart';
-import 'salon_list_screen.dart'; //  🔥 IMPORTANT : importer l’écran
+import '../models/entreprise.dart';
+import 'create_entreprise_screen.dart';
+import 'salon_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +16,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final repository = SalonRepository();
+
   List<SalonStartupAfro> salons = [];
+  List<Entreprise> entreprises = [];
+
   bool isLoading = true;
 
   @override
@@ -24,12 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadData() async {
+    setState(() => isLoading = true);
+
+    final salonsData = await repository.loadSalonsWithCache();
+    final entreprisesBox = Hive.box<Entreprise>('entreprisesBox');
+
     setState(() {
-      isLoading = true;
-    });
-    final data = await repository.loadSalonsWithCache();
-    setState(() {
-      salons = data;
+      salons = salonsData;
+      entreprises = entreprisesBox.values.cast<Entreprise>().toList();
       isLoading = false;
     });
   }
@@ -38,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Salons / Startups Afro"),
+        title: const Text("Salons & Entreprises Afro"),
         backgroundColor: Colors.brown,
         actions: [
           IconButton(
@@ -51,32 +58,53 @@ class _HomeScreenState extends State<HomeScreen> {
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: salons.length,
+              itemCount: salons.length + entreprises.length,
               itemBuilder: (context, index) {
-                final salon = salons[index];
+                if (index < salons.length) {
+                  final salon = salons[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      leading: Image.network(salon.image, width: 50, height: 50),
+                      title: Text(salon.nom),
+                      subtitle: Text("${salon.description}\n${salon.ville} - ${salon.date}"),
+                      isThreeLine: true,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SalonListScreen()),
+                        );
+                      },
+                    ),
+                  );
+                }
+
+                final entreprise = entreprises[index - salons.length];
                 return Card(
+                  color: Colors.orange.shade50,
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    leading: salon.image.isNotEmpty
-                        ? Image.network(salon.image, width: 50, height: 50)
+                    leading: entreprise.image.isNotEmpty
+                        ? Image.network(entreprise.image, width: 50, height: 50)
                         : const Icon(Icons.business),
-                    title: Text(salon.nom),
-                    subtitle: Text("${salon.description}\n${salon.ville} - ${salon.date}"),
+                    title: Text(entreprise.nom),
+                    subtitle: Text("${entreprise.ville}\n${entreprise.description}"),
                     isThreeLine: true,
-
-                    // ⭐️ Navigation ajoutée ici
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SalonListScreen(),
-                        ),
-                      );
-                    },
                   ),
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CreateEntrepriseScreen()),
+          ).then((_) => loadData());
+        },
+        label: const Text("Créer une entreprise"),
+        icon: const Icon(Icons.add_business),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
