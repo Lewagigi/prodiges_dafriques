@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import '../utils.dart'; // pour logout
+import 'package:hive_flutter/hive_flutter.dart';
+import '../models/user.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -10,62 +10,72 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final TextEditingController _nomController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  // Fonction pour créer un compte
-  void register() async {
-    final usersBox = Hive.box('users');
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+  void registerUser() async {
+    final nom = _nomController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-    if (usersBox.containsKey(email)) {
+    if (nom.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cet email existe déjà !")),
+        const SnackBar(content: Text("Veuillez remplir tous les champs")),
       );
       return;
     }
 
-    usersBox.put(email, password);
+    final usersBox = Hive.box<User>('usersBox');
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Compte créé avec succès !")),
+    // Vérifie si l’email existe déjà
+    final emailExists = usersBox.values.any((user) => user.email == email);
+    if (emailExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cet email est déjà utilisé")),
+      );
+      return;
+    }
+
+    final user = User(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      nom: nom,
+      email: email,
+      password: password,
+      isConnected: true,
     );
 
-    Navigator.pushReplacementNamed(context, '/login');
+    await usersBox.put(user.id, user);
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Créer un compte"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => logout(context), // bouton déconnexion
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text("Inscription")),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // centrer le formulaire
           children: [
             TextField(
-              controller: emailController,
+              controller: _nomController,
+              decoration: const InputDecoration(labelText: "Nom"),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _emailController,
               decoration: const InputDecoration(labelText: "Email"),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: "Mot de passe"),
+              controller: _passwordController,
               obscureText: true,
+              decoration: const InputDecoration(labelText: "Mot de passe"),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
             ElevatedButton(
-              onPressed: register,
-              child: const Text("Créer mon compte"),
+              onPressed: registerUser,
+              child: const Text("S'inscrire"),
             ),
           ],
         ),

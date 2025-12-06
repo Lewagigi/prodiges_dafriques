@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../models/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,28 +10,37 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  void login() {
-    final usersBox = Hive.box('users');
+  void loginUser() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-
-    if (!usersBox.containsKey(email)) {
+    if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Aucun compte trouvé pour cet email")),
+        const SnackBar(content: Text("Veuillez remplir tous les champs")),
       );
       return;
     }
 
-    if (usersBox.get(email) != password) {
+    final usersBox = Hive.box<User>('usersBox');
+
+    // Recherche l'utilisateur avec email et mot de passe
+    final users = usersBox.values
+        .where((u) => u.email == email && u.password == password)
+        .toList();
+
+    if (users.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Mot de passe incorrect")),
+        const SnackBar(content: Text("Email ou mot de passe incorrect")),
       );
       return;
     }
+
+    final user = users.first;
+    user.isConnected = true;
+    await user.save();
 
     Navigator.pushReplacementNamed(context, '/home');
   }
@@ -40,21 +50,22 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("Connexion")),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
-              controller: emailController,
+              controller: _emailController,
               decoration: const InputDecoration(labelText: "Email"),
             ),
+            const SizedBox(height: 16),
             TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: "Mot de passe"),
+              controller: _passwordController,
               obscureText: true,
+              decoration: const InputDecoration(labelText: "Mot de passe"),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
             ElevatedButton(
-              onPressed: login,
+              onPressed: loginUser,
               child: const Text("Se connecter"),
             ),
           ],

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:prodiges_dafriques/repositories/salon_repository.dart';
-
 import '../models/salon.dart';
 import '../models/entreprise.dart';
+import '../repositories/salon_repository.dart';
 import 'create_entreprise_screen.dart';
 import 'salon_detail_screen.dart';
 import 'entreprise_detail_screen.dart';
+import 'connected_users_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<SalonStartupAfro> salons = [];
   List<Entreprise> entreprises = [];
-
   bool isLoading = true;
 
   @override
@@ -31,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadData() async {
     setState(() => isLoading = true);
-
     final salonsData = await repository.loadSalonsWithCache();
     final entreprisesBox = Hive.box<Entreprise>('entreprisesBox');
 
@@ -49,6 +47,15 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("Salons & Entreprises Afro"),
         backgroundColor: Colors.brown,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.people),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ConnectedUsersScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: loadData,

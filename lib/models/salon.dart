@@ -2,32 +2,32 @@ import 'package:hive/hive.dart';
 
 part 'salon.g.dart';
 
-@HiveType(typeId: 1)
-class SalonStartupAfro {
+@HiveType(typeId: 3)
+class SalonStartupAfro extends HiveObject {
   @HiveField(0)
-  final int id;
+  String id;
 
   @HiveField(1)
-  final String nom;
+  String nom;
 
   @HiveField(2)
-  final String description;
+  String ville;
 
   @HiveField(3)
-  final String date;
+  String date;
 
   @HiveField(4)
-  final String ville;
+  String description;
 
   @HiveField(5)
-  final String image;
+  String image;
 
   SalonStartupAfro({
     required this.id,
     required this.nom,
-    required this.description,
-    required this.date,
     required this.ville,
-    required this.image,
+    required this.date,
+    required this.description,
+    this.image = '',
   });
 }

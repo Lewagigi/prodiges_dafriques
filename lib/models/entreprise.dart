@@ -3,23 +3,27 @@ import 'package:hive/hive.dart';
 part 'entreprise.g.dart';
 
 @HiveType(typeId: 2)
-class Entreprise {
+class Entreprise extends HiveObject {
   @HiveField(0)
-  final String nom;
+  String id;
 
   @HiveField(1)
-  final String description;
+  String nom;
 
   @HiveField(2)
-  final String ville;
+  String ville;
 
   @HiveField(3)
-  final String image;
+  String description;
+
+  @HiveField(4)
+  String image;
 
   Entreprise({
+    required this.id,
     required this.nom,
-    required this.description,
     required this.ville,
-    required this.image,
+    required this.description,
+    this.image = '',
   });
 }

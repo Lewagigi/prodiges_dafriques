@@ -22,7 +22,7 @@ class _CreateEntrepriseScreenState extends State<CreateEntrepriseScreen> {
       nom: nomController.text,
       description: descriptionController.text,
       ville: villeController.text,
-      image: imageController.text,
+      image: imageController.text, id: '',
     );
 
     await box.add(entreprise);

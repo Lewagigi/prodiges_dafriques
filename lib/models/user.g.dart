@@ -1,47 +1,41 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'salon.dart';
+part of 'user.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class SalonStartupAfroAdapter extends TypeAdapter<SalonStartupAfro> {
+class UserAdapter extends TypeAdapter<User> {
   @override
-  final int typeId = 3;
+  final int typeId = 1;
 
   @override
-  SalonStartupAfro read(BinaryReader reader) {
+  User read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return SalonStartupAfro(
+    return User(
       id: fields[0] as String,
       nom: fields[1] as String,
-      ville: fields[2] as String,
-      date: fields[3] as String,
-      description: fields[4] as String,
-      image: fields[5] as String,
+      email: fields[2] as String,
+      isConnected: fields[3] as bool, password: '',
     );
   }
 
   @override
-  void write(BinaryWriter writer, SalonStartupAfro obj) {
+  void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.nom)
       ..writeByte(2)
-      ..write(obj.ville)
+      ..write(obj.email)
       ..writeByte(3)
-      ..write(obj.date)
-      ..writeByte(4)
-      ..write(obj.description)
-      ..writeByte(5)
-      ..write(obj.image);
+      ..write(obj.isConnected);
   }
 
   @override
@@ -50,7 +44,7 @@ class SalonStartupAfroAdapter extends TypeAdapter<SalonStartupAfro> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SalonStartupAfroAdapter &&
+      other is UserAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

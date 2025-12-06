@@ -3,6 +3,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'models/salon.dart';
 import 'models/entreprise.dart';
+import 'models/user.dart';
+import 'models/user_adapter.dart' hide UserAdapter; // 🔹 Adapter Hive
 
 import 'screens/register_screen.dart';
 import 'screens/login_screen.dart';
@@ -11,22 +13,19 @@ import 'screens/auth_screen.dart';
 import 'screens/community_screen.dart';
 import 'screens/album_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Hive.initFlutter();
 
-  // 🔹 Adapter Salons
+  // 🔹 Adapters Hive
   Hive.registerAdapter(SalonStartupAfroAdapter());
-
-  // 🔹 Adapter Entreprise
   Hive.registerAdapter(EntrepriseAdapter());
+  Hive.registerAdapter(UserAdapter()); // 🔹 Adapter User
 
-  // 🔹 Boxes Hive
-  await Hive.openBox('users');
+  // 🔹 Ouverture des boxes Hive
   await Hive.openBox<SalonStartupAfro>('salonsBox');
- await Hive.openBox<Entreprise>('entreprisesBox');
-
+  await Hive.openBox<Entreprise>('entreprisesBox');
+  await Hive.openBox<User>('usersBox');
 
   runApp(const ProdigesApp());
 }
